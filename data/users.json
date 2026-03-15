@@ -1,0 +1,5 @@
+[
+{"user": "nick", "passhash": "saLTet_OG_hasHET_passWord1", "salt": "spicysalt"}
+
+{"user": "bob", "passhash": "saLTet_OG_hasHET_passWord2", "salt": "surtsalt"}
+]
