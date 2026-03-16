@@ -29,7 +29,7 @@ def login():
 #Når serveren modtager en GET-forespørgsel til "/rooms", vil denne funktion blive kaldt. Den henter alle rum fra "data/rooms.json" og returnerer dem som JSON, så klienten kan vise en liste over tilgængelige rum.
 @app.get("/rooms")
 def get_rooms();
-    Hent alle rum fra "data/rooms.json", tjek whitelist for hvert rum. Retuner alle rum, som klienten har adgang til.
+    Hent alle rum fra "\data", tjek whitelist for hvert rum. Retuner alle rum, som klienten har adgang til.
     
 
 
