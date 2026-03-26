@@ -1,1 +1,0 @@
-int besked = 5
