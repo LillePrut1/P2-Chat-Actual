@@ -1,1 +1,72 @@
 Her lander vi når vi åbner loudpack.dk. Der bliver her tjekket om brugeren er logget ind, og hvis ikke, bliver de sendt videre til login-siden. Hvis de er logget ind, bliver de sendt videre til "/inbox" endpointet for at hente en liste over tilgængelige rum.
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- LOGIN SECTION -->
+    <div id="login-section">
+        <h2>Login</h2>
+
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+
+        <button id="login-btn">Login</button>
+    </div>
+
+
+    <!-- MAIN APP -->
+    <div id="app" style="display: none;">
+
+        <!-- SIDEBAR (groups + users) -->
+        <div id="sidebar">
+
+            <h3>Groups</h3>
+
+            <!-- Liste af grupper -->
+            <ul id="group-list">
+                <!-- JS vil indsætte grupper her -->
+            </ul>
+
+            <!-- Opret gruppe -->
+            <input type="text" id="group-name" placeholder="New group name">
+            <button id="create-group-btn">Create</button>
+
+        </div>
+
+
+        <!-- CHAT AREA -->
+        <div id="chat-section">
+
+            <!-- Header -->
+            <div id="chat-header">
+                <h3 id="current-group">Select a group</h3>
+            </div>
+
+            <!-- Beskeder -->
+            <div id="chat-box">
+                <!-- Messages kommer her -->
+            </div>
+
+            <!-- Input -->
+            <div id="chat-input">
+                <input type="text" id="message-input" placeholder="Write message...">
+                <button id="send-btn">Send</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
