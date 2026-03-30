@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
 import json
 import bcrypt
@@ -9,14 +9,29 @@ CORS(app)
 
 
 
+#Hjælper funktion: Tjek token
+def check_token(): 
+    data = request.get_json() #oversætter indkommende json data via HTTP, til python sprog. Laver det til en dictionary, så vi kan tilgå det med keys.
+    token = data.get("temp_token") #Det der er blevet modtaget fra klienten markeret som "temp_token" i JSON, bliver nu tildelt variablen "token".
+    with open("data/users.json", "r") as f:  #Skulle der ske fejl under åbningen af filen, bruger vi "with" - kommandoen, som automatisk lukker filen efter brug, selv hvis der opstår en fejl. Det er en god praksis for at undgå memory leaks.\
+        userjson = json.load(f)  #users.json er converteret till en python-liste, som vi nu kan tilgå, og aflæse
+
+    user = None #vi starter med at sætte user til None, og hvis vi finder en matchende token i users.json, vil vi opdatere user variablen til at indeholde det korrekte brugernavn. Hvis vi ikke finder en matchende token, vil user forblive None, og vi kan håndtere det som en ugyldig token senere i koden.
+    token_to_user = {u["temp_token"]: u["user"] for u in userjson} #Her laver vi en "dictionary comprehension", hvor hver "temp_token" i userjson bliver en key, og hver "user" bliver den tilsvarende value. Resultatet er en dictionary, hvor vi hurtigt kan slå et token op for at finde det tilhørende brugernavn.
+    
+    user = token_to_user.get(token) #Her tildeler vi variablen "user" til det brugernavn, som tokenet tilhører
+   
+    if user is None:
+            return jsonify({"error": "Invalid token"}), 401 
+    return user
 
 
-# Helper function: read JSON
+# Hjælper function: read JSON
 def load_json(path):
     with open(path, "r") as f:
         return json.load(f)
 
-# Helper function: write JSON
+# Hjælper function: write JSON
 def save_json(path, data):
     with open(path, "w") as f:
         json.dump(data, f, indent=2)
@@ -30,20 +45,21 @@ def save_json(path, data):
 #Når serveren modtager en POST-forespørgsel til "/login", vil denne funktion blive kaldt.
 
 #Check om brugeren er logget ind. Hvis ikke, send videre til /login. Hvis sandt, hent inbox og rum for denne bruger, og retuner det til klienten.
-if userloggedin = false:
-redirect("/login")
+if userloggedin == false:
+     redirect("/login")
 
 
 
 @app.post("/register")
 #Vi modtager input fra klienten, og konverterer det til python sprog. Derefter tjekker vi om brugeren allerede finde is /users.json. Hvis ikke, konverterer vi passwordet til bytes, hasher med bcrypt der genererer salt, og gemmer derefter "user, hashedpw, publickey" i /users.json.
-    def register():  
+def register():  
         user = data.get("user")
         password = data.get("password")
         publickey = data.get("publickey")
         if any(u["user"] == user for u in load_json("data/users.json")):
             return jsonify({"error": "Brugernavn allerede taget"}), 400
         else: 
+            #her Krypterer vi med bcrypt. bcrypt håndterer både hashing og salt. Vi tænker at skifte til at gøre det manuelt med SHA256 og os.urandom
             password_bytes = password.encode("utf-8")
             hashedpw = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
             save_json("data/users.json", {"user": user, "hashedpw": hashedpw, "publickey": publickey})
@@ -60,7 +76,7 @@ def login():
         bcrypt.checkpw(password_bytes, hashedpw):
             return jsonify({"message": "Login successful"}), 200
 
-EFTER BRUGEREN ER LOGGET IND, SKAL BRUGEREN TILDELES EN LOGIN-TOKEN, SOM SKAL SENDES MED I HVER FØLGENDE FORESpørgsel FOR AT BEVISE AT DE ER LOGGET IND. DENNE TOKEN KAN VÆRE EN SIMPEL STRING, DER GENERERES VED LOGIN OG GEMMES I MINNET PÅ SERVEREN SAMMEN MED BRUGERNAVNET. NÅR EN FORESpørgsel MODTAGES, TJEKKER SERVEREN OM TOKENET ER GYLDIGT OG HØRER TIL DEN RIGTIGE BRUGER, FØR DEN UDFØRER DEN ANBEFALTE HANDLING.
+EFTER BRUGEREN ER LOGGET IND, SKAL BRUGEREN TILDELES EN LOGIN-TOKEN, SOM SKAL SENDES MED I HVER FØLGENDE FORESPØRGSEL FOR AT BEVISE AT DE ER LOGGET IND. DENNE TOKEN KAN VÆRE EN SIMPEL STRING, DER GENERERES VED LOGIN OG GEMMES I MINNET PÅ SERVEREN SAMMEN MED BRUGERNAVNET. NÅR EN FORESpørgsel MODTAGES, TJEKKER SERVEREN OM TOKENET ER GYLDIGT OG HØRER TIL DEN RIGTIGE BRUGER, FØR DEN UDFØRER DEN ANBEFALTE HANDLING.
 
 userloggedin = true
 redirect("/inbox")
@@ -71,26 +87,18 @@ redirect("/inbox")
 #Disse rum gemmes som en python-liste og tildeler "groups" denne værdi         
 @app.get("/rooms")
 def get_rooms():
-    data = request.get_json() #oversætter json data til python sprog. Laver det til en dicrionary, så vi kan tilgå det med keys.
-    token = data.get("temp_token")
-    with open("data/users.json", "r") as f:
-        userjson = json.load(f)
-    user = None
-    def token_to_user():
-        {u["temp_token"]: u["user"] for u in userjson}
-    
-        user = token_to_user.get(token)
-   
-        if user is None:
-            return jsonify({"error": "Invalid token"}), 401 #fra linje 75-85 håndterer vi tokens. Dette kan sikkert genbruges, overvej at lave det til en helper function, så vi ikke skal skrive det hver gang vi skal tjekke token.
-
+    user = check_token() #Her kalder vi vores helper function "check_token" for at finde ud af hvilken bruger der har sendt forespørgslen. Hvis tokenet er ugyldigt, vil check_token returnere en fejlbesked, og funktionen vil ikke fortsætte.
     with open("data/"+user+".json", "r") as f:
         user_rooms = json.load(f)
-        groups = [item["groupname"] for item in user_rooms]  # groups har nu værdien ["rum1", "rum2", "rum3", "rum4", "rum5"] er er nu en "list"
+        groups = [item["groupname"] for item in user_rooms]  # groups har nu værdien ["rum1", "rum2", "rum3", "rum4", "rum5"] og er nu en "list"
     return jsonify({"groups": groups}), 200 #Her sendes gruppelisten tilbage til klienten i JSON-format. Klienten kan nu bruge denne liste til at vise de tilgængelige rum for brugeren.
 
 
-#Dette var hvordan vi håndeter login-token før 
+
+# !!!!!!!!!Fra linje 75-87 håndterer vi tokens. Dette kan sikkert genbruges, overvej at lave det til en helper function, så vi ikke skal skrive det hver gang vi skal tjekke token.!!!!!!!!
+
+
+#Dette var hvordan vi håndterede login-token før 
 """""
    for user_data in userjson:
         if user_data.get("temp_token") == token:
