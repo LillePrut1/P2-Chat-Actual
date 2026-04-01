@@ -1,12 +1,13 @@
 [
-{"whitelist": ["nick", "bob"], "blacklist": ["eve"], "admin" : ["nick"]}
+{"whitelist": ["nick", "bob"], "blacklist": ["eve"], "admin" : ["nick"]},
 {"user": "nick", "groupkey": "112134sf5678ousdfo7654"} ,
-{"user": "bob", "groupkey": "3724823894238sdhf8329"} ,
+{"user": "bob", "groupkey": "3724823894238sdhf8329"} 
 ]
 
 
 
 //Messages
+
 [
     {
     "sender": "nick",
