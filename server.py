@@ -117,7 +117,14 @@ def get_rooms():
 #Når serveren modtager en GET-forespørgsel til "/messages", vil denne funktion blive kaldt. Den henter alle beskeder fra "data/messages.json" og returnerer dem som JSON.
 @app.get("/messages")
 def get_message():
-   
+"""
+Som jeg forstår det, henter den lige nu alle beskeder fra alle rooms. 
+Man kunne evt. opdele, så den kun henter beskeder fra det room, man aktuelt har åbnet. 
+Det passer meget godt med den følgende funktion (post_message), som også tjekker, hvilket rum der er valgt. Men selve valget af rum er vel JavaScript?
+"""
+     user = check_token() #her bekræfter vi brugeren
+
+
 
 
 
@@ -125,7 +132,7 @@ def get_message():
 #Når serveren modtager en POST-forespørgsel til "/messages", vil denne funktion blive kaldt. 
 @app.post("/messages")
 def post_message():
-Check hvilket rum der er vagt. Gem klientens tilsendte "ciphertext" i det valgte rum, noter også timestamp. 
+Check hvilket rum der er valgt. Gem klientens tilsendte "ciphertext" i det valgte rum, noter også timestamp. 
 I f-eks "data/rum1.json". 
 
 
@@ -142,7 +149,15 @@ I f-eks "data/rum1.json".
 @app.post("/group_delete")
 def group_delete():
     Check om brugeren har administrative rettigheder i det valgte rum. Hvis ja, slet "rum.json". Retuner en succesbesked, ellers en fejlbesked.
+#Jeg foreslår at vi tilknytter administratorers userIDs til group IDs, og så simpelthen verfificerer dem lidt a la "Is [userID] = [tilknyttet administratorID]? --> True/False"
+"""
+user = check_token() #Her bekræfter vi brugerens identitet
+room = room_id #Jeg laver lige en fil med room id
+#Her skal room-listen nok laves om fra json til Python
+if user in room1
 
+if user == 
+"""
 
 @app.post("/group_add")
 def group_add():
