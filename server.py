@@ -3,6 +3,7 @@ from flask_cors import CORS
 import json
 import bcrypt
 import time
+import secrets
 
 app = Flask(__name__)
 CORS(app)
@@ -65,21 +66,20 @@ def register():
             save_json("data/users.json", {"user": user, "hashedpw": hashedpw, "publickey": publickey})
 
 
-    
 
-@app.post("/login")
-def login():
 #Modtag username og password fra klienten. Check i "data/users.json" om brugeren findes. Hvis ja, føj gemte salt til passwordet og hash det. Sammenlign det med det gemte hash. Hvis de matcher, retuner en succesbesked, ellers en fejlbesked.
-#Send bruger videre til "/inbox" endpointet for at hente en liste over tilgængelige rum.
-        
-#her gør vi hvad der skulle gøres i login-funktionen hvis vi SKAL benytte bcrypt.
-        bcrypt.checkpw(password_bytes, hashedpw):
-            return jsonify({"message": "Login successful"}), 200
+#Send bruger videre til "/inbox" endpointet for at hente en liste over tilgængelige rum.   
+@app.post("/login")
+def login():       
+    bcrypt.checkpw(password_bytes, hashedpw):    #her gør vi hvad der skulle gøres i login-funktionen hvis vi SKAL benytte bcrypt.
+    save_json("data/users.json", {"temp_token": secrets.token_urlsafe(32)}) #her tilføjer vi en temp_token, som skal bruges til at tjekke om brugeren er logget ind i de følgende funktioner. temp_token bliver genereret med secrets-modulet, som generer en URL-sikker (Hvad det så end betyder) token, der er 32 bytes lang.
+    userloggedin = true
+    redirect("/inbox")
+    return jsonify({"message": "Login successful"}), 200
 
-EFTER BRUGEREN ER LOGGET IND, SKAL BRUGEREN TILDELES EN LOGIN-TOKEN, SOM SKAL SENDES MED I HVER FØLGENDE FORESPØRGSEL FOR AT BEVISE AT DE ER LOGGET IND. DENNE TOKEN KAN VÆRE EN SIMPEL STRING, DER GENERERES VED LOGIN OG GEMMES I MINNET PÅ SERVEREN SAMMEN MED BRUGERNAVNET. NÅR EN FORESpørgsel MODTAGES, TJEKKER SERVEREN OM TOKENET ER GYLDIGT OG HØRER TIL DEN RIGTIGE BRUGER, FØR DEN UDFØRER DEN ANBEFALTE HANDLING.
 
-userloggedin = true
-redirect("/inbox")
+#EFTER BRUGEREN ER LOGGET IND, SKAL BRUGEREN TILDELES EN LOGIN-TOKEN, SOM SKAL SENDES MED I HVER FØLGENDE FORESPØRGSEL FOR AT BEVISE AT DE ER LOGGET IND. DENNE TOKEN KAN VÆRE EN SIMPEL STRING, DER GENERERES VED LOGIN OG GEMMES I MINNET PÅ SERVEREN SAMMEN MED BRUGERNAVNET. NÅR EN FORESpørgsel MODTAGES, TJEKKER SERVEREN OM TOKENET ER GYLDIGT OG HØRER TIL DEN RIGTIGE BRUGER, FØR DEN UDFØRER DEN ANBEFALTE HANDLING.
+
 
 
 #Når serveren modtager en GET-forespørgsel til "/rooms", vil denne funktion blive kaldt. 
