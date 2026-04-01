@@ -182,7 +182,9 @@ def group_remove_user():
     def group_key_update():
         Vent på klienten har generet en "new group key" og sendt den til serveren. herefter fetcher vi alle tillbageværende rummets brugeres publlic keys. disse sendes til klienten, som er ved at administrere. vi afventer at klienten krypterer group key med alle public keys og gemmer herefter de krypterede group keys i "rumX.json". Retuner en succesbesked.
 
-
+@app.post("/group_remove_self")
+def group_remove_self():
+ #Vi skal bruge en funktion, der tillader brugere at fjerne sig selv fra en gruppe
 
 
  def group_keygen():
