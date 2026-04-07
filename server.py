@@ -27,6 +27,21 @@ def check_token():
     return user
 
 
+#Hjælper-funktion: Tjek om brugeren er medlem af gruppen
+#Funktionen foventer at modtage { "group": "rum1" } i JSON-format fra klienten
+def check_group_membership(user):
+    data = request.get_json()
+    groupname = data.get("group") #Vi modtager gruppenavnet fra klienten, og tildeler det til variablen "groupname"
+    with open("data/"+user+".json", "r") as f:
+       memberships = json.load(f)  #users.json er converteret till en python-liste, som vi nu kan tilgå, og aflæse
+       groupkey = next((x["groupkey"] for x in memberships if x["groupname"] == groupname), None) #groupkey for værdien af den tilhørende gruppe
+       if any(u["groupname"] == groupname for u in load_json("data/"+user+".json")): #hvis variablen griupname matcher et gruppenavn returnerer vi gruppenavnet og tilhørende gruppenøgle. Vi håndterer det som en boolean true/false i de kommende funktioner hvor vi tager brug af check_group_membership.
+              return groupname, groupkey
+       else:
+              return jsonify({"error": "Du er ikke medlem af denne gruppe"}), 403
+
+
+
 # Hjælper function: read JSON
 def load_json(path):
     with open(path, "r") as f:
@@ -95,35 +110,22 @@ def get_rooms():
 
 
 
-# !!!!!!!!!Fra linje 75-87 håndterer vi tokens. Dette kan sikkert genbruges, overvej at lave det til en helper function, så vi ikke skal skrive det hver gang vi skal tjekke token.!!!!!!!!
-
-
-#Dette var hvordan vi håndterede login-token før 
-"""""
-   for user_data in userjson:
-        if user_data.get("temp_token") == token:
-            user = user_data["user"]
-            break
-    if user is None:
-        return jsonify({"error": "Invalid token"}), 401
-"""
-
-
-
-    Tjek login-token for at finde ud af hvilken bruger vi har at gøre med. Tjek nu brugrens medlemsskab for hvert rum. Retuner alle rum, som klienten har adgang til.
-    
-
-
 #Når serveren modtager en GET-forespørgsel til "/messages", vil denne funktion blive kaldt. Den henter alle beskeder fra "data/messages.json" og returnerer dem som JSON.
 @app.get("/messages")
 def get_message():
-"""
-Som jeg forstår det, henter den lige nu alle beskeder fra alle rooms. 
-Man kunne evt. opdele, så den kun henter beskeder fra det room, man aktuelt har åbnet. 
-Det passer meget godt med den følgende funktion (post_message), som også tjekker, hvilket rum der er valgt. Men selve valget af rum er vel JavaScript?
-"""
-     user = check_token() #her bekræfter vi brugeren
+    user = check_token() #her bekræfter vi brugeren
+    group = check_group_membership(user)
+    groupname = group.get("groupname") # check_group_membership returnerer både groupname og groupkey, så vi tildeler begge disse værdiersin seperate variabel "groupname" og "groupkey"
+    groupkey = group.get("groupkey")
+    if check_group_membership(user) == True #her tjekker vi om brugeren er medlem af gruppen, og hvis ikke, retunerer en fejlbesked. BOOLEAN
+        with open("data/"+groupname+".json", "r") as f:  #Vi åbner dokumentet for det pågældeende rum
+        messages = json.load(f)    #vi tildeler variablen "messages" indholdet af vores group.json som er en liste over beskeder i det pågældene rum.
+    return jsonify({"messages": messages}), groupkey, 200  # Vi returnerer beskederne i JSON-format så klienten kan læse og sættte det pænt op i browseren.
 
+"""
+Nice 2 have: Vi kunne starte med blot at loade de seneste 50 beskeder for ikke at oversvømme klienten i data
+"""
+     
 
 
 
@@ -132,6 +134,7 @@ Det passer meget godt med den følgende funktion (post_message), som også tjekk
 #Når serveren modtager en POST-forespørgsel til "/messages", vil denne funktion blive kaldt. 
 @app.post("/messages")
 def post_message():
+    user = check_token() #her bekræfter vi brugeren
 Check hvilket rum der er valgt. Gem klientens tilsendte "ciphertext" i det valgte rum, noter også timestamp. 
 I f-eks "data/rum1.json". 
 
@@ -148,6 +151,7 @@ I f-eks "data/rum1.json".
 
 @app.post("/group_delete")
 def group_delete():
+    user = check_token() #her bekræfter vi brugeren
     Check om brugeren har administrative rettigheder i det valgte rum. Hvis ja, slet "rum.json". Retuner en succesbesked, ellers en fejlbesked.
 #Jeg foreslår at vi tilknytter administratorers userIDs til group IDs, og så simpelthen verfificerer dem lidt a la "Is [userID] = [tilknyttet administratorID]? --> True/False"
 """
@@ -161,6 +165,7 @@ if user ==
 
 @app.post("/group_add")
 def group_add():
+    user = check_token() #her bekræfter vi brugeren
     Check om gruppen eksisterer. Hvis ja, retuner fejlbeskedd "navn allerede brugt". Hvis nej, generer rum, giv brugeren administrative rettigheder i det rum, og retuner en succesbesked.
     def group_keygen():
         Vent på klienten har generet en "encrypted group key" og sendt den til serveren. Når den modtages, gem den i "data/rumX.json". Gem også brugerens public-krypterede group key i "data/users.json" sammen med brugernavnet. Retuner en succesbesked.
@@ -168,9 +173,10 @@ def group_add():
         Generer et unikt group ID for rummet. Returner group ID'et.
     
 
-
+#ADMIN SKAL HAVE ADGANG TIL EN BRUGERLISTE, SØRG FOR AT DETTE BLIVER OPFYLDT
 @app.post("/group_add_user")
 def group_add_user():
+    user = check_token() #her bekræfter vi brugeren
     Check om brugeren har administrative rettigheder i det valgte rum. Hvis ja, tilføj den nye bruger til "rum.json" og retuner en succesbesked, ellers retuner en fejlbesked.
     def public_key_fetch_save():
         Fetch den nyes bruger public key fra "data/users.json".  Sen pubic-key til klienten, så den kan kryptere group key'en for den nye bruger. Når den modtages, gem den i "data/rumX.json" sammen med brugernavnet. Retuner en succesbesked.
@@ -178,12 +184,14 @@ def group_add_user():
 
 @app.post("/group_remove_user")
 def group_remove_user():
+    user = check_token() #her bekræfter vi brugeren
     Check om brugeren har administrative rettigheder i det valgte rum. Hvis ja, fjern den valgte bruger fra "rum.json" og returner en succesbesked, ellers returner en fejlbesked.
     def group_key_update():
         Vent på klienten har generet en "new group key" og sendt den til serveren. herefter fetcher vi alle tillbageværende rummets brugeres publlic keys. disse sendes til klienten, som er ved at administrere. vi afventer at klienten krypterer group key med alle public keys og gemmer herefter de krypterede group keys i "rumX.json". Retuner en succesbesked.
 
 @app.post("/group_remove_self")
 def group_remove_self():
+ user = check_token() #her bekræfter vi brugeren
  #Vi skal bruge en funktion, der tillader brugere at fjerne sig selv fra en gruppe
 
 
