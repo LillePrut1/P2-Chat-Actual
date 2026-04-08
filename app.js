@@ -102,7 +102,15 @@ function createGroup() {
     const li = document.createElement("li");
     li.textContent = groupName;
 
-    li.addEventListener("click", () => selectGroup(groupName));
+    li.addEventListener("click", () => {
+        selectGroup(groupName);
+
+        document.querySelectorAll("#group-list li").forEach(item => {
+            item.classList.remove("active-group");
+        });
+
+        li.classList.add("active-group");
+    });
 
     groupList.appendChild(li);
 
@@ -148,18 +156,28 @@ function sendMessage() {
 
     if (message === "") return;
 
-    const formattedMessage = "You: " + message;
-
-    messages[currentGroup].push(formattedMessage);
-
     const chatBox = document.getElementById("chat-box");
 
     const msgDiv = document.createElement("div");
-    msgDiv.textContent = formattedMessage;
+    msgDiv.classList.add("message", "my-message");
+
+    const text = document.createElement("div");
+    text.textContent = message;
+
+    const time = document.createElement("div");
+    time.classList.add("timestamp");
+    time.textContent = new Date().toLocaleTimeString();
+
+    msgDiv.appendChild(text);
+    msgDiv.appendChild(time);
 
     chatBox.appendChild(msgDiv);
 
+    messages[currentGroup].push(message);
+
     document.getElementById("message-input").value = "";
+
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 
@@ -177,3 +195,16 @@ window.onload = function () {
         showApp();
     }
 };
+
+// =======================
+// THEME TOGGLE (PLACER HER)
+// =======================
+document.getElementById("theme-toggle").addEventListener("click", () => {
+    if (document.body.classList.contains("dark-mode")) {
+        document.body.classList.remove("dark-mode");
+        document.body.classList.add("light-mode");
+    } else {
+        document.body.classList.remove("light-mode");
+        document.body.classList.add("dark-mode");
+    }
+});

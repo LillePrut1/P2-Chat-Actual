@@ -1,77 +1,98 @@
-Her lander vi når vi åbner loudpack.dk. Der bliver her tjekket om brugeren er logget ind, og hvis ikke, bliver de sendt videre til login-siden. Hvis de er logget ind, bliver de sendt videre til "/inbox" endpointet for at hente en liste over tilgængelige rum.
 
-<!DOCTYPE html>
-<html lang="en">
+<!-- Dette er en kommentar -->
 
-<head>
-    <meta charset="UTF-8">
-    <title>Secure Chat</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+<!-- Når siden åbnes, tjekker systemet om brugeren er logget ind (via token).
+Hvis ja → vis app
+Hvis nej → vis login -->
 
-<body>
+
+
+<!DOCTYPE html>                                     <!-- Fortæller browseren at dette er en HTML5 side -->
+<html lang="en">                                    <!-- Starer HTML-dokumentet og angiver sprog til engelsk -->
+
+<head>                                              <!-- Indeholder information om hjemmesiden (ikke synligt for brugeren) -->
+    <meta charset="UTF-8">                          <!-- Sørger for korrekt visning af tegn (æ, ø, å osv.) -->
+    <title>Secure Chat</title>                      <!-- Titel på siden (vises i browser fanen) -->
+    <link rel="stylesheet" href="style.css">        <!-- Forbinder HTML med CSS (design/styling) -->
+</head>                                             <!-- Slut på head sektionen -->
+
+<body>                                              <!-- Alt det brugeren ser på hjemmesiden -->
 
     <!-- LOGIN SECTION -->
-    <div id="login-section">
-        <h2>Login</h2>
+    <div id="login-section">                        <!-- <div> = en “container” (en boks), id="login-section" = navn på boksen, Container til login området -->
 
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
+        <h1 id="app-title">AAU Secure Chat</h1>     <!-- Overskrift for login -->
+        <h2>Login</h2>                                                
 
-        <button id="login-btn">Login</button>
+        <input type="text" id="username" placeholder="Username">       <!-- Input felt til username: type="text" → brugeren kan skrive tekst, id="username" → JS bruger den, placeholder → tekst i feltet -->
+        <input type="password" id="password" placeholder="Password">   <!-- Input felt til password: type="password" → viser stjerner i stedet for tekst, id="password" → JS bruger den, placeholder → tekst i feltet -->
 
-        <label>
-        <input type="checkbox" id="remember-me">
-        Keep me logged in
-        </label>
+        <button id="login-btn">Login</button>                          <!-- Login knap som JS bruger til at starte login -->
+
+        <div id="remember-container">                                  <!-- Checkbox til at huske brugerens login -->
+            <input type="checkbox" id="remember-me">
+            <label for="remember-me">Keep me logged in</label>
+        </div>
     </div>
 
 
     <!-- MAIN APP -->
-    <div id="app" style="display: none;">
+    <div id="app" style="display: none;">                                       <!-- Hele appen (skjult indtil login er gennemført) -->
+
 
         <!-- SIDEBAR (groups + users) -->
         <div id="sidebar">
 
-            <h3>Groups</h3>
+            <!-- GROUPS -->
+            <h3>Groups</h3>                                                     <!-- Overskrift for grupper -->
+            <ul id="group-list"></ul>
 
-            <!-- Liste af grupper -->
-            <ul id="group-list">
-                <!-- JS vil indsætte grupper her -->
+            <!-- CREATE GROUP -->
+            <input type="text" id="group-name" placeholder="New group name">    <!-- Input felt til at skrive navn på ny gruppe -->
+            <button id="create-group-btn">Create</button>                       <!-- Knap til at oprette ny gruppe -->
+                
+            <!-- USERS -->    
+            <h3 style="margin-top: 30px;">Users</h3>
+            <ul id="user-list">
+                <li>You</li>
+                <li>Friend</li>
             </ul>
 
-            <!-- Opret gruppe -->
-            <input type="text" id="group-name" placeholder="New group name">
-            <button id="create-group-btn">Create</button>
+            <!-- Settings -->
+            <div style="margin-top: auto;">
+                <button id="theme-toggle">Toggle Theme</button>
+            </div>                                                               <!-- sidebar slutter her -->
 
-        </div>
+        </div>                                                                  
 
 
         <!-- CHAT AREA -->
         <div id="chat-section">
 
             <!-- Header -->
-            <div id="chat-header">
-                <h3 id="current-group">Select a group</h3>
+            <div id="chat-header">                                                        <!-- Header der viser hvilken gruppe man chatter i -->
+                <h3 id="current-group">Select a group</h3>                                <!-- Opdateres dynamisk af JavaScript -->
             </div>
 
-            <!-- Beskeder -->
-            <div id="chat-box">
+            <!-- Beskeder -->                                                             <!-- Her vises alle chat beskeder -->
+            <div id="chat-box">                                                           <!-- JavaScript indsætter beskeder dynamisk -->
                 <!-- Messages kommer her -->
             </div>
 
             <!-- Input -->
-            <div id="chat-input">
-                <input type="text" id="message-input" placeholder="Write message...">
-                <button id="send-btn">Send</button>
+            <div id="chat-input">                                                         <!-- Område hvor brugeren skriver og sender beskeder -->
+
+                <input type="text" id="message-input" placeholder="Write message...">     <!-- Input felt til at skrive en besked -->
+                <button id="send-btn">Send</button>                                       <!-- Knap til at sende besked -->
             </div>
 
         </div>
 
-    </div>
+    </div>                           <!-- Slut på app container -->
 
-    <script src="app.js"></script>
+    <script src="app.js"></script>   <!-- Forbinder HTML med JavaScript (funktionalitet) -->
 
-</body>
+</body>                              <!-- Slut på body (synligt indhold) -->
 
-</html>
+</html>                              <!-- Slut på hele HTML dokumentet -->
+
