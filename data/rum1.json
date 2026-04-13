@@ -1,29 +1,25 @@
 [
-  {
-    "whitelist": ["nick", "bob"],
-    "blacklist": ["eve"],
-    "admin": ["nick"]
-  },
-  {
-    "user": "nick",
-    "groupkey": "112134sf5678ousdfo7654"
-  },
-  {
-    "user": "bob",
-    "groupkey": "3724823894238sdhf8329"
-  },
-  {
-    "messages": [
-      {
-        "sender": "nick",
-        "ciphertext": "krypteret_BESKED69",
-        "timestamp": 1772042621.9279401
-      },
-      {
-        "sender": "bob",
-        "ciphertext": "krypteret_BESKED420",
-        "timestamp": 1871149621.8279401
-      }
-    ]
+{"whitelist": ["nick", "bob"], "blacklist": ["eve"], "admin" : ["nick"]},
+{"user": "nick", "groupkey": "112134sf5678ousdfo7654"} ,
+{"user": "bob", "groupkey": "3724823894238sdhf8329"} 
+]
+//fjern groupkey herfa, da vi indhenter det i +user+.json
+
+
+//Messages
+
+[
+    {
+    "sender": "nick",
+    "ciphertext": "krypteret_BESKED69",
+    "timestamp": 1772042621.9279401,
+  } ,
+
+
+   {
+    "sender": "bob",
+    "ciphertext": "krypteret_BESKED420",
+    "timestamp": 1871149621.8279401,
   }
+
 ]
