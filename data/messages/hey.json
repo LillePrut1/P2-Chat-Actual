@@ -3,5 +3,10 @@
     "sender": "nick",
     "ciphertext": "hej",
     "timestamp": 1776087589.180414
+  },
+  {
+    "sender": "nick",
+    "ciphertext": "hkhk",
+    "timestamp": 1776088178.08321
   }
 ]
