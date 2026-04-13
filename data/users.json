@@ -1,5 +1,16 @@
 [
-{"user": "nick", "hashedpw": "saLTet_OG_hasHET_passWord1", "salt": "spicysalt", "publickey": "fspigjfosuhgfdhgiludjhgd", "temp_token": "yappayappayappa"},
-
-{"user": "bob", "hashedpw": "saLTet_OG_hasHET_passWord2", "salt": "surtsalt", "publickey": "hgfdghfd89djgiorehgofeo99", "temp_token": "yappayappayappa2"}
+  {
+    "user": "nick",
+    "hashedpw": "saLTet_OG_hasHET_passWord1",
+    "salt": "spicysalt",
+    "publickey": "fspigjfosuhgfdhgiludjhgd",
+    "temp_token": "8F20BetFOSco2KsLk2f91jyR0OYo2tHffR7v6AKY2xg"
+  },
+  {
+    "user": "bob",
+    "hashedpw": "saLTet_OG_hasHET_passWord2",
+    "salt": "surtsalt",
+    "publickey": "hgfdghfd89djgiorehgofeo99",
+    "temp_token": "yappayappayappa2"
+  }
 ]

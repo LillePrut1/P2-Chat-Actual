@@ -21,8 +21,6 @@ async function handleLogin() {
     const password = document.getElementById("password").value;
     const rememberMe = document.getElementById("remember-me").checked;
 
-    console.log("Trying login:", username);
-
     try {
         const response = await fetch("http://localhost:8000/login", {
             method: "POST",
@@ -35,35 +33,22 @@ async function handleLogin() {
         const data = await response.json();
 
         if (response.ok) {
-            console.log("Login success:", data);
+            const token = data.token;
 
-            const token = data.token || "fake-token";
-
-            // 🔥 REMEMBER ME LOGIC
             if (rememberMe) {
                 localStorage.setItem("token", token);
             } else {
                 sessionStorage.setItem("token", token);
             }
 
+            loadGroups();
             showApp();
-
         } else {
-            alert("Login failed");
+            alert(data.error);
         }
 
     } catch (error) {
-        console.log("Backend not running → using fake login");
-
-        const token = "fake-token";
-
-        if (rememberMe) {
-            localStorage.setItem("token", token);
-        } else {
-            sessionStorage.setItem("token", token);
-        }
-
-        showApp();
+        alert("Server not running");
     }
 }
 
@@ -125,20 +110,35 @@ function createGroup() {
 // =======================
 // SELECT GROUP
 // =======================
-function selectGroup(groupName) {
+async function selectGroup(groupName) {
     currentGroup = groupName;
 
     document.getElementById("current-group").textContent = groupName;
 
+    const token =
+        localStorage.getItem("token") ||
+        sessionStorage.getItem("token");
+
+    const response = await fetch("http://localhost:8000/messages", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            token,
+            group: groupName
+        })
+    });
+
+    const data = await response.json();
+
     const chatBox = document.getElementById("chat-box");
     chatBox.innerHTML = "";
 
-    const groupMessages = messages[groupName];
-
-    groupMessages.forEach(msg => {
-        const msgDiv = document.createElement("div");
-        msgDiv.textContent = msg;
-        chatBox.appendChild(msgDiv);
+    data.messages.forEach(msg => {
+        const div = document.createElement("div");
+        div.textContent = msg.sender + ": " + msg.ciphertext;
+        chatBox.appendChild(div);
     });
 }
 
@@ -146,7 +146,7 @@ function selectGroup(groupName) {
 // =======================
 // SEND MESSAGE
 // =======================
-function sendMessage() {
+async function sendMessage() {
     const message = document.getElementById("message-input").value;
 
     if (!currentGroup) {
@@ -156,28 +156,55 @@ function sendMessage() {
 
     if (message === "") return;
 
-    const chatBox = document.getElementById("chat-box");
+    const token =
+        localStorage.getItem("token") ||
+        sessionStorage.getItem("token");
 
-    const msgDiv = document.createElement("div");
-    msgDiv.classList.add("message", "my-message");
+    try {
+        const response = await fetch("http://localhost:8000/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                token: token,
+                group: currentGroup,
+                ciphertext: message
+            })
+        });
 
-    const text = document.createElement("div");
-    text.textContent = message;
+        const data = await response.json();
 
-    const time = document.createElement("div");
-    time.classList.add("timestamp");
-    time.textContent = new Date().toLocaleTimeString();
+        if (!response.ok) {
+            alert("Failed to send message");
+            return;
+        }
 
-    msgDiv.appendChild(text);
-    msgDiv.appendChild(time);
+        // VIS BESKED I UI
+        const chatBox = document.getElementById("chat-box");
 
-    chatBox.appendChild(msgDiv);
+        const msgDiv = document.createElement("div");
+        msgDiv.classList.add("message", "my-message");
 
-    messages[currentGroup].push(message);
+        const text = document.createElement("div");
+        text.textContent = message;
 
-    document.getElementById("message-input").value = "";
+        const time = document.createElement("div");
+        time.classList.add("timestamp");
+        time.textContent = new Date().toLocaleTimeString();
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+        msgDiv.appendChild(text);
+        msgDiv.appendChild(time);
+
+        chatBox.appendChild(msgDiv);
+
+        document.getElementById("message-input").value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+    } catch (error) {
+        console.log("Error sending message:", error);
+        alert("Server error");
+    }
 }
 
 
@@ -208,3 +235,32 @@ document.getElementById("theme-toggle").addEventListener("click", () => {
         document.body.classList.add("dark-mode");
     }
 });
+
+
+async function loadGroups() {
+    const token =
+        localStorage.getItem("token") ||
+        sessionStorage.getItem("token");
+
+    const response = await fetch("http://localhost:8000/rooms", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ token })
+    });
+
+    const data = await response.json();
+
+    const groupList = document.getElementById("group-list");
+    groupList.innerHTML = "";
+
+    data.groups.forEach(group => {
+        const li = document.createElement("li");
+        li.textContent = group;
+
+        li.onclick = () => selectGroup(group);
+
+        groupList.appendChild(li);
+    });
+}
