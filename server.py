@@ -70,7 +70,7 @@ if userloggedin == false:
 #Vi modtager input fra klienten, og konverterer det til python sprog. Derefter tjekker vi om brugeren allerede finde is /users.json. Hvis ikke, konverterer vi passwordet til bytes, hasher med bcrypt der genererer salt, og gemmer derefter "user, hashedpw, publickey" i /users.json.
 def register():  
         user = data.get("user")
-        password = data.get("password")
+        hashedpassword = data.get("hashedpassword")
         publickey = data.get("publickey")
         if any(u["user"] == user for u in load_json("data/users.json")):
             return jsonify({"error": "Brugernavn allerede taget"}), 400

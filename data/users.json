@@ -1,5 +1,5 @@
 [
 {"user": "nick", "hashedpw": "saLTet_OG_hasHET_passWord1", "salt": "spicysalt", "publickey": "fspigjfosuhgfdhgiludjhgd", "temp_token": "yappayappayappa"},
 
-{"user": "bob", "hashedpw": "saLTet_OG_hasHET_passWord2", "salt": "surtsalt", "publickey": "hgfdghfd89djgiorehgofeo99", "temp_token": "yappayappayappa2"}
+{"user": "bob", "hashedpw": "saLTet_OG_hasHET_passWord2", "salt": "surtsalt", "publickey": "hgfdghfd89djgiorehgofeo99", "temp_token": "yappayappayappa2"} //Når vi registrerer en bruger lukker sessionen, bliver temp_tokebn ryddet.
 ]
