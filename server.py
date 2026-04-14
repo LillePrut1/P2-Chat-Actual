@@ -72,13 +72,14 @@ def register():
         user = data.get("user")
         hashedpassword = data.get("hashedpassword")
         publickey = data.get("publickey")
+        salt = data.get("salt")
         if any(u["user"] == user for u in load_json("data/users.json")):
             return jsonify({"error": "Brugernavn allerede taget"}), 400
         else: 
             #her Krypterer vi med bcrypt. bcrypt håndterer både hashing og salt. Vi tænker at skifte til at gøre det manuelt med SHA256 og os.urandom
             password_bytes = password.encode("utf-8")
             hashedpw = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
-            save_json("data/users.json", {"user": user, "hashedpw": hashedpw, "publickey": publickey})
+            save_json("data/users.json", {"user": user, "hashedpw": hashedpw, "publickey": publickey, "salt": salt})
 
 
 
@@ -86,7 +87,7 @@ def register():
 #Send bruger videre til "/inbox" endpointet for at hente en liste over tilgængelige rum.   
 @app.post("/login")
 def login():       
-    bcrypt.checkpw(password_bytes, hashedpw):    #her gør vi hvad der skulle gøres i login-funktionen hvis vi SKAL benytte bcrypt.
+    bcrypt.checkpw(password_bytes, hashedpw):#her gør vi hvad der skulle gøres i login-funktionen hvis vi SKAL benytte bcrypt.
     save_json("data/users.json", {"temp_token": secrets.token_urlsafe(32)}) #her tilføjer vi en temp_token, som skal bruges til at tjekke om brugeren er logget ind i de følgende funktioner. temp_token bliver genereret med secrets-modulet, som generer en URL-sikker (Hvad det så end betyder) token, der er 32 bytes lang.
     userloggedin = true
     redirect("/inbox")
@@ -131,21 +132,36 @@ Nice 2 have: Vi kunne starte med blot at loade de seneste 50 beskeder for ikke a
 
 
 
-#Når serveren modtager en POST-forespørgsel til "/messages", vil denne funktion blive kaldt. 
+#Når serveren modtager en POST-forespørgsel til "/messages", vil denne funktion blive kaldt. Der forventes, at klienten sender en JSON-pakke med "ciphertext" og "group" (rum) i. Serveren tjekker først tokenet for at bekræfte brugerens identitet, og derefter tjekker den om brugeren er medlem af det angivne rum. Hvis begge tjek er bestået, gemmer serveren den krypterede besked i det pågældende rums JSON-fil sammen med et timestamp.
+# Det antages at klienten allerede har modtaget gruppenøglen, så beskeden allerede er krypteret fra klien-siden. 
 @app.post("/messages")
 def post_message():
+    data = request.get_json() #Vi laver modtagne pakke om til python-variabel.
+    ciphertext = data.get("ciphertext") #Vi modtager den krypterede besked fra klienten, og tildeler den til variablen "ciphertext"
     user = check_token() #her bekræfter vi brugeren
-Check hvilket rum der er valgt. Gem klientens tilsendte "ciphertext" i det valgte rum, noter også timestamp. 
+    group = check_group_membership(user)
+    groupname = group.get("groupname")
+    if check_group_membership(user) == True:
+        INDSÆT ciphertext og timestamp med time  ("data/"+groupname+".json") #her åbner vi det pågældende rum, og tilføjer den nye besked til det. Vi skal bruge en funktion der kan editere json-filer, så vi ikke overskriver det eksisterende indhold.
+    return jsonify({"message": "Besked modtaget"}), 200 #Vi retunerer en succesbesked til klienten, så den ved at beskeden er blevet modtaget og gemt korrekt på serveren.
+
+
+Gem klientens tilsendte "ciphertext" i det valgte rum, noter også timestamp. 
 I f-eks "data/rum1.json". 
 
+#FUNKTIONEN RETURNERER "GROUPKEY" DENNE GROUPKEY, ER AES-GRUPPENØGLEN KRYPTERET MED DEN SPECIFIKKE BRUGERS PUBLIC-KEY. DENNE KEY SKAL AFKRYPTERES MED PRIVATE-KEY, SÅ KLIENTEN HAR AES-NØGLEN TIL AT KUNNE KRYPTERE SIN BESKED.
 
 
-    def nonce_gen ():
-    Generer et unikt nonce for hver besked.Genererer også et timestamp til beskeden. Returner nonce'et.
 
 
-    def checksign ():
-    Tjek om beskeden er signeret korrekt. Hvis ja, gem besked, ellers retuner en fejlbesked.
+
+
+  #  def nonce_gen ():
+    # Generer et unikt nonce for hver besked.Genererer også et timestamp til beskeden. Returner nonce'et.
+
+
+#    def checksign ():
+ #   Tjek om beskeden er signeret korrekt. Hvis ja, gem besked, ellers retuner en fejlbesked.
 
 
 
