@@ -1,0 +1,55 @@
+pov server.py pov
+    input
+
+//TJEK_TOKEN
+input: noget der minder om post_json 
+    ("temp_token"): "1234t3mpt0k3n"
+altså der skal sendes en pakke til server.py med token info osv
+output: return 
+    jsonify({"error": "invalid token"}), 401 
+"kommer kun som output hvis tjekket fejler.
+
+//CHECK_GROUP_MEMBERSHIB
+input: 
+    { "group": "rum1" } 
+output: return jsonify
+    ({"error": "invalid token"}), 401 
+"kommer kun som output hvsi tjekket fejler.
+Det her hjælper funktion group membershib og at det kommer til at køre igen og igen, brugt meget.
+
+//GET /ROOMS
+input: kører igennem check token, hvor man sender temp token
+output: tejk billede
+{
+"groups": [
+    "rum1"
+    "rum2"' 
+    "rum3"' osv
+    ]
+}
+
+//GET /MESSEGES
+input: kører igennem check token, hvor man sender temp token
+output:
+    {"message": [
+        ""sender": "bob",
+        "ciphertext": "krypteret_BESKED420",
+        "timestamp": 1871149621.8279401,"
+    ]
+    "message2": [
+        ""sender": "nick",
+        "ciphertext": "krypteret_BESKED69",
+        "timestamp": 1772042621.9279401,"' 
+    ]
+    "message3"' osv
+    
+}
+    Modtager også "GROUP_KEY"
+        find ud af om {} er nødvendig
+
+---
+Se hvordan det fungere med håntering af de senesete 50 beskeder når man joiner gruppen
+    Se hvordan det fungere med scrolling af gruppens forrige beskeder
+        Se om det bedre at skifte "@app.pull()" og "@app.git()" til bedre alternativer, og hvad det kommer til at gøre?
+
+//
