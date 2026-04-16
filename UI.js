@@ -1,25 +1,30 @@
-// refresh delay (2 sec for now)
+// refresh delay on 2 sec, meaning the server will refresh every 2 seconds
 const POLL_MS = 2000;
 
-// basic state
+/*this is the basic state, holding user, group, and messages that are being used at the moment
+it will be updated as the user interacts with the app, making so easy to tell what is what and what is active
+messages are different since it is an array that holds all messages sent in the current group, compared to user and group that are single values
+static and dynamic :)
+*/ 
 let currentUser = null;
 let currentGroup = null;
 let messages = [];
 
-// keeping this empty for now. Ill put all the html element refs in here later
+// this is state of the ui, meaning it will hold all the references to the html elements
 const ui = {};
 
-// this will connect buttons and inputs to the functions once i have the actual html ids
+// and this is a reference to the chat messages container
 function setupUI() {
-    // nothing yet
+    // im pretty confused on this part, so ill put it on hold for now..    
 }
 
-// quick error helper
+// here is where the error messages will be displayed
 function showError(message) {
     console.error("Error:", message);
 }
 
-// just printing things so I can see if stuff works
+// this is where the chat ui will be updated, meaning it will show the state of the app,
+// such also very important, its showing/converts the current user, group, messages etc to a new state
 function updateChatUI() {
     console.log("UI updated");
     console.log("user:", currentUser);
@@ -27,27 +32,14 @@ function updateChatUI() {
     console.log("messages:", messages);
 }
 
-// testing message output
+// this is where the messages will be displayed, meaning it will show all messages in the current group
+    //- note, we need to make a limit for the ones joining, so on log in they can see prox the last 50 messages
+    // and we need to research how scrolling and the message part will work, since its a chat app
 function displayMessages(messages) {
     console.log("=== Messages ===");
     for (let msg of messages) {
         console.log(msg);
     }
-}
-
-// fake inputs until html fields are available
-function getInputValues() {
-    return {
-        username: "al1",
-        password: "asdfasdf123",
-        message: "nissan, suzuki, yamaha",
-        groupName: "MyGroup"
-    };
-}
-
-// nothing to clear yet but keeping this here for later
-function clearInputFields() {
-    console.log("cleared inputs");
 }
 
 // login flow (temp)
@@ -147,3 +139,22 @@ currentGroup = "General";
 messages = ["hello", "hi"];
 updateChatUI();
 */
+
+// dont know how and where i should put this, this took me awhile, but ig well let it stay here for now, untill we find a better soultuion..
+function updateUIWithResult(result) { 
+    console.log(result);
+
+    if (result.error) {
+        // show error in UI
+        console.log("Invalid token");
+    } else {
+        // show user in UI
+        console.log("User:", result.user);
+    }
+}function updateUIWithUser(user) {
+    console.log("Logged in as:", user);
+}
+
+function updateUIWithError(msg) {
+    console.log(msg);
+}
