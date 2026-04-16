@@ -1,3 +1,10 @@
+main tankegang
+
+    ui -> app -> info -> app -> server -> app -> ui
+
+formål for app er at fange informationen, sende videre, modtage ny info og sende videre igen
+formål for server er at godkende og tjekke
+
 pov server.py pov
     input
 
@@ -47,7 +54,7 @@ output:
     Modtager også "GROUP_KEY"
         find ud af om {} er nødvendig
 
----
+---ekstra
 Se hvordan det fungere med håntering af de senesete 50 beskeder når man joiner gruppen
     Se hvordan det fungere med scrolling af gruppens forrige beskeder
         Se om det bedre at skifte "@app.pull()" og "@app.git()" til bedre alternativer, og hvad det kommer til at gøre?
