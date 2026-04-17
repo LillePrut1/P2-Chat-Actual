@@ -10,6 +10,19 @@ CORS(app)
 
 
 
+
+#Hjælpe funktion: Tjek Admin er Admin (for rummet)
+def check_admin(user, groupname): 
+    
+    check_toke
+    
+    
+    
+    
+    )
+
+
+
 #Hjælper funktion: Tjek token
 def check_token(): 
     data = request.get_json() #oversætter indkommende json data via HTTP, til python sprog. Laver det til en dictionary, så vi kan tilgå det med keys.
@@ -179,6 +192,7 @@ if user in room1
 if user == 
 """
 
+#tilføj gruppe 
 @app.post("/group_add")
 def group_add():
     user = check_token() #her bekræfter vi brugeren
