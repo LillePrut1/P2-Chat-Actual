@@ -1,0 +1,20 @@
+{
+  "members": ["nick", "bob"],
+  "admin": ["nick"],
+  "messages": []
+}
+
+
+{
+    "sender": "nick",
+    "ciphertext": "krypteret_BESKED69",
+    "timestamp": 1772042621.9279401,
+  } ,
+
+
+   {
+    "sender": "bob",
+    "ciphertext": "krypteret_BESKED420",
+    "timestamp": 1871149621.8279401,
+  }
+

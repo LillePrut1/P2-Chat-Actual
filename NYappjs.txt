@@ -60,3 +60,14 @@ Se hvordan det fungere med håntering af de senesete 50 beskeder når man joiner
         Se om det bedre at skifte "@app.pull()" og "@app.git()" til bedre alternativer, og hvad det kommer til at gøre?
 
 //
+
+token expiration
+    sleep funcition
+    when user is not using the program etc for 5 min, it will auto log out
+        and then it will discard the old token
+        logging in again will gen a new token
+    
+    conditions
+        expiration date: time limit? a user cant be logged in for more than 
+        same user can only at once, meaning you cant be active on two devices
+        
